@@ -1,134 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-    getAllActivities, 
-    getAllCountries, 
-    filterByContinent, 
-    orderByPopulation, 
-    orderByAlf, 
-    filterByActivity, 
-    getCountryByName 
-} from "../redux/actions";
+import { getAllCountries } from "../redux/actions";
 import Card from './Card';
+import Filtrado from "./Filtrado";
+import Ordenamiento from "./Ordenamiento";
+import SearchBar from "./SearchBar";
+import Paginado from "./Paginado";
 
 export default function Home() {
     const dispatch = useDispatch();
 
-    const [name, setName] = useState('');
-
     useEffect(() => {
         dispatch(getAllCountries());
-        dispatch(getAllActivities());
     }, [dispatch]);
 
-    const activities = useSelector(s => s.activities);
     const countries = useSelector(s => s.countries);
 
-    function handleOrderByPopulation(e) {
-        if(e.target.value !== 'All') dispatch(orderByPopulation(e.target.value));
-        else dispatch(getAllCountries());
-    }
+    const [page, setPage] = useState(1);
+    const perPage = 10;
+    const lastIndex = page * perPage;
+    const firstIndex = lastIndex - perPage;
+    const currentCountries = Array.isArray(countries) ? countries.slice(firstIndex, lastIndex) : 'No hay paises';
 
-    function handleOrderByAlf(e) {
-        if(e.target.value !== 'All') dispatch(orderByAlf(e.target.value));
-        else dispatch(getAllCountries());
-    }
-
-    function handleFilterContinent(e) {
-        if(e.target.value !== 'All') dispatch(filterByContinent(e.target.value));
-        else dispatch(getAllCountries());
-    }
-
-    function handleFilterByActivity(e) {
-        if(e.target.value !== 'All') dispatch(filterByActivity(e.target.value));
-        else dispatch(getAllCountries());
-    }
-
-    function handleChange(e) {
-        setName(e.target.value);
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        dispatch(getCountryByName(name))
-        setName('');
+    function paginado(n) {
+        setPage(n);
     }
 
     return (
         <div>
-            <nav>
-                <div>
-                    <span>Buscar por nombre </span>
-                    <input 
-                    type="text"
-                    placeholder='Ingrese el pais...'
-                    value={name}
-                    onChange={e => handleChange(e)}
-                    />
-                    <button type='submit' onSubmit={e => handleSubmit(e)}>Buscar</button>
-                </div>
-                <div>
-                    <span>Ordenar alfabeticamente</span>
-                    <select onChange={e => handleOrderByAlf(e)}>
-                        <option value="All">Seleccione</option>
-                        <option value="asc">Ascendente</option>
-                        <option value="desc">Descendente</option>
-                    </select>
-                </div>
-                <div>
-                    <span>Ordenar por poblacion</span>
-                    <select onChange={e => handleOrderByPopulation(e)}>
-                        <option value="All">Seleccione</option>
-                        <option value="asc">Ascendente</option>
-                        <option value="desc">Descendente</option>
-                    </select>
-                </div>
-                <div>
-                    <span>Filtrar por continente</span>
-                    <select onChange={e => handleFilterContinent(e)}>
-                        <option value="All">Todos los continentes</option>
-                        <option value="Americas">America</option>
-                        <option value="Europe">Europa</option>
-                        <option value="Asia">Asia</option>
-                        <option value="Africa">Africa</option>
-                        <option value="Oceania">Oceania</option>
-                    </select>
-                </div>
-                <div>
-                    <span>Filtrar por actividad turistica</span>
-                    <select onChange={e => handleFilterByActivity(e)}>
-                        <option value="All">Todos</option>
-                        {
-                            activities?.length && 
-                            activities.map(el => {
-                                return (
-                                    <option 
-                                    value={el.name} 
-                                    key={el.id}>{el.name}</option>
-                                );
-                            })
-                        }
-                    </select>
-                </div>
-                <Link to='/activities'>
-                    <button>Crear actividad turistica</button>
-                </Link>
-            </nav>
+            <div>
+                <Link to='/activities'><button>Crear actividad turistica</button></Link>
+            </div>
+            <div>
+                <SearchBar/>
+                <Filtrado/>
+                <Ordenamiento/>
+            </div>
+            <div>
+                <Paginado perPage={perPage} countries={countries.length} paginado={paginado}/>
+            </div>
             <div>
                 {
-                    countries?.length > 0 ? 
-                    countries.map(el => {
+                    currentCountries?.length ? 
+                    currentCountries?.map(el => {
                         return (
-                            <div>
-                                <Link to={`/countries/${el.cca3}`}>
-                                    <Card
-                                    key={el.cca3}
-                                    flag={el.flag}
-                                    name={el.name}
-                                    region={el.region}
-                                    />
-                                </Link>
+                            <div key={el.cca3}>
+                                <Card
+                                cca3={el.cca3}
+                                flag={el.flag}
+                                name={el.name}
+                                region={el.region}
+                                />
                             </div>
                         );
                     }) : 

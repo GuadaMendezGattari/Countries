@@ -1,15 +1,22 @@
 import React, {useEffect} from "react";
 import {useDispatch, useSelector} from 'react-redux';
-import { getCountryDetail } from "../redux/actions";
+import { back, getCountryDetail } from "../redux/actions";
 import { useParams, Link } from 'react-router-dom';
 
 export default function CountryDetail() {
     const {idCountry} = useParams();
-    const country = useSelector(s => s.countryDetail);
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(getCountryDetail(idCountry));
     }, [dispatch, idCountry]);
+
+    const country = useSelector(s => s.countryDetail);
+
+    function backHome(e) {
+        dispatch(back());
+    }
+
     return (
         <div>
             <div>
@@ -29,12 +36,10 @@ export default function CountryDetail() {
                     country.activities.map(el => {
                         return (
                             <div key={el.cca3}>
-                                <ul>
-                                    <li>{el.name}</li>
-                                    <li>Dificultad (del 1 al 5): {el.difficulty}</li>
-                                    <li>Duracion (en minutos): {el.duration}</li>
-                                    <li>Estacion del año: {el.season}</li>
-                                </ul>
+                                <h5>{el.name}</h5>
+                                <p>Dificultad (del 1 al 5): {el.difficulty}</p>
+                                <p>Duracion (en minutos): {el.duration}</p>
+                                <p>Estacion del año: {el.season}</p>
                             </div>
                         )
                     })
@@ -42,9 +47,7 @@ export default function CountryDetail() {
                     <h5>No hay actividades turisticas para este pais</h5>
                 }
             </div>
-            <Link to='/home'>
-                <button>Volver al home</button>
-            </Link>
+            <Link to='/home'><button onClick={e => backHome(e)}>Volver al home</button></Link>
         </div>
     );
 }

@@ -8,6 +8,7 @@ export const FILTER_BY_CONTINENT = 'FILTER_BY_CONTINENT';
 export const FILTER_BY_ACTIVITY = 'FILTER_BY_ACTIVITY';
 export const ORDER_BY_ALF = 'ORDER_BY_ALF';
 export const ORDER_BY_POPULATION = 'ORDER_BY_POPULATION';
+export const BACK = 'BACK';
 
 export function getAllCountries() {
     return function(dispatch) {
@@ -59,11 +60,11 @@ export function orderByPopulation(payload) {
 
 export function createActivity(payload) {
     return async function () {
-        try {
-            const createChar = await axios.post('http://localhost:3001/activities', payload)
-            return createChar;
-        } catch (error) {
-            console.log(error);
-        }
+        const createChar = await axios.post('http://localhost:3001/activities', payload);
+        return createChar;
     }
+}
+
+export function back() {
+    return {type: BACK}
 }

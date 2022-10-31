@@ -6,7 +6,8 @@ import {
     FILTER_BY_CONTINENT,
     FILTER_BY_ACTIVITY,
     ORDER_BY_ALF,
-    ORDER_BY_POPULATION
+    ORDER_BY_POPULATION,
+    BACK
 } from "./actions"
 
 const initialState = {
@@ -60,14 +61,19 @@ export default function rootReducer(state=initialState, action) {
               });
             return {
                 ...state,
-                countries: action.payload === 'asc' ? order : order.reverse()
+                countries: action.payload === 'asc' ? [...order] : [...order.reverse()]
             };
         case ORDER_BY_POPULATION:
             const population = state.copyCountries.sort((a, b) => Number(a.population) - Number(b.population))
             return {
                 ...state,
-                countries: action.payload === 'asc' ? population : population.reverse()
+                countries: action.payload === 'asc' ? [...population] : [...population.reverse()]
             };
+        case BACK:
+            return {
+                ...state, 
+                countryDetail: {}
+            }
         default: 
             return {...state};
     }

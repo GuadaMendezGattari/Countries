@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useDispatch } from 'react-redux';
-import { getCountryByName } from '../redux/actions';
+import { getAllCountries, getCountryByName } from '../redux/actions';
 
 export default function SearchBar() {
     const dispatch = useDispatch();
@@ -16,16 +16,17 @@ export default function SearchBar() {
         setName('');
     }
 
+    function handleBack(e) {
+        dispatch(getAllCountries());
+    }
+
     return (
         <div>
-            <label>Buscar por nombre </label>
-            <input 
-            type="text"
-            placeholder='Ingrese el pais...'
-            value={name}
-            onChange={e => handleChange(e)}
+            <span>Buscar por nombre </span>
+            <input type="text" placeholder='Ingrese el pais...' value={name} onChange={e => handleChange(e)}
             />
-            <button type='submit' onSubmit={e => handleSubmit(e)}>Buscar</button>
+            <button onClick={e => handleSubmit(e)}>Buscar</button>
+            <button onClick={e => handleBack(e)}>Volver a cargar todos</button>
         </div>
     );
 }
